@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Bus</title>
+  <style>
+    body {
+      font-family: 'Noto Sans Tamil', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      color: #333;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    header h2 {
+      margin: 5px 0;
+      font-size: 1rem;
+      font-weight: normal;
+    }
+
+    #searchBox {
+      width: 90%;
+      max-width: 400px;
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    .container {
+      flex: 1;
+      padding: 15px;
+      max-width: 1000px;
+      margin: auto;
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+      font-size: 1rem;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    /* Highlight முப / பிப */
+    .ampm {
+      font-weight: bold;
+      color: #d32f2f;
+    }
+
+    /* Card layout for mobile */
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody tr {
+        margin-bottom: 15px;
+        background: white;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      tbody td {
+        border: none;
+        padding: 6px 10px;
+        text-align: left;
+        font-size: 0.9rem;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      tbody td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #007bff;
+        flex: 1;
+      }
+
+      tbody td span {
+        flex: 2;
+        text-align: right;
+      }
+    }
+
+    footer {
+      background: #f1f1f1;
+      text-align: center;
+      padding: 15px;
+      margin-top: auto;
+    }
+
+    footer h1 {
+      margin: 5px 0;
+      font-size: 1rem;
+      color: #007bff;
+    }
+
+    footer p {
+      margin: 5px 0;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    footer img {
+      width: 30px;
+      height: 30px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>அருப்புக்கோட்டை</h1>
+      <h2>மினி பஸ் நேரம்</h2>
+      <input type="text" id="searchBox" placeholder="🔍 பேருந்து / இடம் தேடுங்கள்...">
+    </header>
+
+    <div class="container">
+      <table>
+        <thead>
+          <tr>
+            <th>எண்</th>
+            <th>பேருந்து</th>
+            <th>நேரம்</th>
+            <th>முப / பிப</th>
+            <th>இருந்து</th>
+            <th>வரை</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <footer>
+      <h1>Moorthi Dharmaraj</h1>
+      <p>Kindly share more details, feedback<br>and other bus details, Thank You</p>
+      <a href="https://www.instagram.com/moorthitechno/" target="_blank">
+        <img src="instagram.png" alt="insta-id">
+      </a>
+    </footer>
+  </div>
+
+  <script>
+    const tbody = document.getElementById("tbody");
+    const searchBox = document.getElementById("searchBox");
+
+    // Clean data: store times as strings
+    const busDetailsObject = [
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"06:00", amOrpm:"முப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"06:25", amOrpm:"முப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"06:55", amOrpm:"முப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"07:25", amOrpm:"முப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"07:55", amOrpm:"முப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"08:30", amOrpm:"முப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"09:10", amOrpm:"முப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"09:55", amOrpm:"முப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"10:35", amOrpm:"முப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"11:05", amOrpm:"முப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"11:45", amOrpm:"முப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"12:30", amOrpm:"பிப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"01:05", amOrpm:"பிப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"01:45", amOrpm:"பிப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"02:15", amOrpm:"பிப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"02:55", amOrpm:"பிப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"03:35", amOrpm:"பிப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"04:15", amOrpm:"பிப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"05:05", amOrpm:"பிப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"05:55", amOrpm:"பிப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"06:25", amOrpm:"பிப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"07:05", amOrpm:"பிப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"07:40", amOrpm:"பிப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"08:15", amOrpm:"பிப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"09:10", amOrpm:"பிப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"09:25", amOrpm:"பிப", service:"ஜெயா"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"09:55", amOrpm:"பிப", service:"மீனாம்பிகை"},
+      {from:"காமராஜர் நகர்", to:"வெள்ளைக்கோட்டை, சிவன் கோவில்", time:"10:25", amOrpm:"பிப", service:"ஜெயா"},
+    ];
+
+    function renderTable(data) {
+      tbody.innerHTML = "";
+      data.forEach((bus, index) => {
+        tbody.innerHTML += `
+          <tr>
+            <td data-label="எண்"><span>${index + 1}</span></td>
+            <td data-label="பேருந்து"><span>${bus.service}</span></td>
+            <td data-label="நேரம்"><span>${bus.time}</span></td>
+            <td data-label="முப / பிப"><span class="ampm">${bus.amOrpm}</span></td>
+            <td data-label="இருந்து"><span>${bus.from}</span></td>
+            <td data-label="வரை"><span>${bus.to}</span></td>
+          </tr>
+        `;
+      });
+    }
+
+    // Initial render
+    renderTable(busDetailsObject);
+
+    // Search filter
+    searchBox.addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const filtered = busDetailsObject.filter(bus =>
+        bus.service.toLowerCase().includes(query) ||
+        bus.time.toString().includes(query) ||
+        bus.from.toLowerCase().includes(query) ||
+        bus.to.toLowerCase().includes(query)
+      );
+      renderTable(filtered);
+    });
+  </script>
+</body>
+</html>
